@@ -1,11 +1,9 @@
-# 机器人批次指标分析
+# 机器人装机与售后
 
-项目保存机器人批次的来源版次，按资料取得时间比较单期指标并给出区域规则判断。evidence 保存来源，metrics 计算同口径偏离，context 解释当前区域规则，report 保存报告。现有实现尚不处理跨期与跨空间的综合分析。样本是合成数据。
+项目按来源版本保存业务资料，已有 fleet、service、parts 环节。现有装机、工单和备件只看当前开单数，未按实际暴露时间与配置变化估计批次风险。
 
-Python 3.11 以上，在项目根目录执行：
+运行与检查：
 
     python -m unittest discover -s tests -v
-    python -m compileall -q apec_analysis tests
-    python -m apec_analysis.cli inspect data/example.json
-
-Dockerfile 可在 Linux 容器运行：docker build -t apec-analysis-003 .；docker run --rm apec-analysis-003。
+    python -m compileall -q robot_service tests
+    python -m robot_service.cli data/example.json
