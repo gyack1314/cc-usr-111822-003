@@ -36,3 +36,22 @@ def at(db, kind, known_at):
         if identity not in latest or marker > latest[identity][0]:
             latest[identity] = (marker, {'id': identity, 'revision': revision, 'received_at': received, 'payload': json.loads(body), 'digest': digest})
     return [value[1] for _, value in sorted(latest.items())]
+
+def documents(db, received_after=None, received_by=None):
+    """列出接收时间窗口内的资料版本（含摘要，用于决策证据追溯）。"""
+    clauses = []
+    args = []
+    if received_after is not None:
+        clauses.append('received_at > ?')
+        args.append(received_after)
+    if received_by is not None:
+        clauses.append('received_at <= ?')
+        args.append(received_by)
+    sql = 'SELECT kind,identity,revision,received_at,body,digest FROM documents'
+    if clauses:
+        sql += ' WHERE ' + ' AND '.join(clauses)
+    sql += ' ORDER BY received_at,kind,identity,revision'
+    return [
+        {'kind': kind, 'id': identity, 'revision': revision, 'received_at': received, 'payload': json.loads(body), 'digest': digest}
+        for kind, identity, revision, received, body, digest in db.execute(sql, args)
+    ]
